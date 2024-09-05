@@ -2,6 +2,14 @@ pipeline {
     agent any
 
     stages {
+        stage('Setup Node.js') {
+            steps {
+                echo 'Checking Node.js and npm versions...'
+                sh 'node --version'
+                sh 'npm --version'
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -19,8 +27,6 @@ pipeline {
                 }
             }
         }
-
-        // Remove the Install dependencies and Start Application stages if they are handled in build.sh
     }
 
     post {
