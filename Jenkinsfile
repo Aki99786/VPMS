@@ -2,18 +2,19 @@ pipeline {
     agent any
 
     environment {
-        HOME = '/home/ubuntu'
-        NVM_DIR = '$HOME/.nvm'
+        HOME = '/var/lib/jenkins'
+        NVM_DIR = "$HOME/.nvm"
     }
 
     stages {
         stage('Setup Node.js') {
             steps {
                 script {
-                    // Load NVM and install/use Node.js
+                    // Using bash explicitly for the script block
                     sh '''
+                    #!/bin/bash
                     source $NVM_DIR/nvm.sh
-                    nvm install node # Install the latest version of Node.js
+                    nvm install node  # Install the latest version of Node.js
                     nvm use node
                     node --version
                     npm --version
@@ -22,7 +23,27 @@ pipeline {
             }
         }
 
-        // Other stages...
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    if (fileExists('build.sh')) {
+                        sh 'chmod +x build.sh'
+                        sh './build.sh'
+                    } else {
+                        error "build.sh not found"
+                    }
+                }
+            }
+        }
+
+        // Other stages like Test, Deploy can be added here
+
     }
 
     post {
