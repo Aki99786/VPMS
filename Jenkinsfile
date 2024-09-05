@@ -9,16 +9,17 @@ pipeline {
     stages {
         stage('Setup Node.js') {
             steps {
-                // Use a bash shell explicitly to load NVM
-                sh '''
+                script {
+                    // Using bash explicitly for the script block
+                    sh '''
                     #!/bin/bash
-                    export NVM_DIR="$HOME/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+                    source $NVM_DIR/nvm.sh
                     nvm install node  # Install the latest version of Node.js
                     nvm use node
                     node --version
                     npm --version
-                '''
+                    '''
+                }
             }
         }
 
@@ -41,7 +42,7 @@ pipeline {
             }
         }
 
-        // Additional stages like Test, Deploy can be added here
+        // Other stages like Test, Deploy can be added here
 
     }
 
