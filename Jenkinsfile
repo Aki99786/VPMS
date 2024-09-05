@@ -4,31 +4,29 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checks out the source code from Git
                 checkout scm
             }
         }
 
-        stage('Install dependencies') {
+        stage('Build') {
             steps {
-                // Installs npm dependencies
-                sh 'npm install'
+                script {
+                    if (fileExists('build.sh')) {
+                        sh './build.sh'
+                    } else {
+                        error "build.sh not found"
+                    }
+                }
             }
         }
 
-        stage('Start Application') {
-            steps {
-                // This step starts your server
-                sh 'npm start'
-            }
-        }
+        // Remove the Install dependencies and Start Application stages if they are handled in build.sh
     }
 
     post {
-        // Actions to take after pipeline execution
         always {
             echo 'Cleaning up...'
-            // Add any cleanup steps if required
+            cleanWs()
         }
         success {
             echo 'Pipeline completed successfully.'
